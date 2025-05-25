@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IDO Social Media Post Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        
+        .form-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .section-title {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            font-weight: 600;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .highlight-inputs {
+            display: grid;
+            gap: 10px;
+        }
+        
+        .date-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 100%;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+        
+        .required {
+            color: #e74c3c;
+        }
+        
+        .success-message {
+            display: none;
+            background: #2ecc71;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .error-message {
+            display: none;
+            background: #e74c3c;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>IDO Social Media Post Generator</h1>
+        <p class="subtitle">Fill in the details below to generate all social media posts for your IDO campaign</p>
+        
+        <div class="success-message" id="successMessage">
+            ✅ Posts generated successfully! Check your Notion database or Slack channel.
+        </div>
+        
+        <div class="error-message" id="errorMessage">
+            ❌ Error: <span id="errorText"></span>
+        </div>
+        
+        <form id="idoForm">
+            <!-- Project Information -->
+            <div class="form-section">
+                <h2 class="section-title">Project Information</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="partnerName">Partner Name <span class="required">*</span></label>
+                        <input type="text" id="partnerName" name="partnerName" required placeholder="e.g., WalletConnect">
+                    </div>
+                    <div class="form-group">
+                        <label for="twitter">Twitter/X Handle <span class="required">*</span></label>
+                        <input type="text" id="twitter" name="twitter" required placeholder="@projectname">
+                    </div>
+                    <div class="form-group">
+                        <label for="projectSummary">Project Summary (100 chars)</label>
+                        <input type="text" id="projectSummary" name="projectSummary" maxlength="100" placeholder="Brief project description">
+                    </div>
+                    <div class="form-group">
+                        <label for="projectType">Project Type</label>
+                        <input type="text" id="projectType" name="projectType" placeholder="e.g., AI-powered Gaming, DeFi Protocol">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="projectDescription">Detailed Description</label>
+                    <textarea id="projectDescription" name="projectDescription" placeholder="Full project description for announcements"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Project Highlights (4 key features)</label>
+                    <div class="highlight-inputs">
+                        <input type="text" name="highlight1" placeholder="Highlight 1">
+                        <input type="text" name="highlight2" placeholder="Highlight 2">
+                        <input type="text" name="highlight3" placeholder="Highlight 3">
+                        <input type="text" name="highlight4" placeholder="Highlight 4">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Token Information -->
+            <div class="form-section">
+                <h2 class="section-title">Token Information</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="ticker">Ticker Symbol <span class="required">*</span></label>
+                        <input type="text" id="ticker" name="ticker" required placeholder="$TOKEN">
+                    </div>
+                    <div class="form-group">
+                        <label for="tokenName">Token Name</label>
+                        <input type="text" id="tokenName" name="tokenName" placeholder="Token Full Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="network">Network/Chain <span class="required">*</span></label>
+                        <select id="network" name="network" required>
+                            <option value="">Select Network</option>
+                            <option value="BSC">BSC</option>
+                            <option value="Ethereum">Ethereum</option>
+                            <option value="Polygon">Polygon</option>
+                            <option value="Arbitrum">Arbitrum</option>
+                            <option value="Base">Base</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="totalSupply">Total Supply</label>
+                        <input type="text" id="totalSupply" name="totalSupply" placeholder="e.g., 1B">
+                    </div>
+                    <div class="form-group">
+                        <label for="tokenPrice">Token Price</label>
+                        <input type="text" id="tokenPrice" name="tokenPrice" placeholder="$0.001">
+                    </div>
+                    <div class="form-group">
+                        <label for="imc">IMC with Liquidity</label>
+                        <input type="text" id="imc" name="imc" placeholder="$1,000,000">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- IDO Details -->
+            <div class="form-section">
+                <h2 class="section-title">IDO Details</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="allocation">IDO Allocation <span class="required">*</span></label>
+                        <input type="text" id="allocation" name="allocation" required placeholder="$500,000">
+                    </div>
+                    <div class="form-group">
+                        <label for="raiseAmount">Total Raise Amount</label>
+                        <input type="text" id="raiseAmount" name="raiseAmount" placeholder="$1,000,000">
+                    </div>
+                    <div class="form-group">
+                        <label for="idoDate">IDO Date</label>
+                        <input type="text" id="idoDate" name="idoDate" placeholder="November 15-17 or TBA">
+                    </div>
+                    <div class="form-group">
+                        <label for="listingDate">Listing Date</label>
+                        <input type="text" id="listingDate" name="listingDate" placeholder="November 20 or TBA">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Timeline Information -->
+            <div class="form-section">
+                <h2 class="section-title">Timeline Information</h2>
+                
+                <div class="form-group">
+                    <label>Registration Period <span class="required">*</span></label>
+                    <div class="date-group">
+                        <input type="datetime-local" name="registrationStart" required>
+                        <input type="datetime-local" name="registrationEnd" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Pre-Order Period</label>
+                    <div class="date-group">
+                        <input type="datetime-local" name="preOrderStart">
+                        <input type="datetime-local" name="preOrderEnd">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Guaranteed Round</label>
+                    <div class="date-group">
+                        <input type="datetime-local" name="guaranteedStart">
+                        <input type="datetime-local" name="guaranteedEnd">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>FCFS Round</label>
+                    <div class="date-group">
+                        <input type="datetime-local" name="fcfsStart">
+                        <input type="datetime-local" name="fcfsEnd">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- URLs and Links -->
+            <div class="form-section">
+                <h2 class="section-title">URLs and Links</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="idoPageUrl">IDO Page URL <span class="required">*</span></label>
+                        <input type="url" id="idoPageUrl" name="idoPageUrl" required placeholder="https://pad.chaingpt.org/buy-token/">
+                    </div>
+                    <div class="form-group">
+                        <label for="blogUrl">Blog/Article URL</label>
+                        <input type="url" id="blogUrl" name="blogUrl" placeholder="https://blog.chaingpt.org/...">
+                    </div>
+                    <div class="form-group">
+                        <label for="giveawayUrl">Giveaway URL</label>
+                        <input type="url" id="giveawayUrl" name="giveawayUrl" placeholder="Optional">
+                    </div>
+                    <div class="form-group">
+                        <label for="amaUrl">AMA/Spaces URL</label>
+                        <input type="url" id="amaUrl" name="amaUrl" placeholder="Optional">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Social Media Links -->
+            <div class="form-section">
+                <h2 class="section-title">Social Media Links</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="website">Website</label>
+                        <input type="url" id="website" name="website" placeholder="https://example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="discord">Discord</label>
+                        <input type="url" id="discord" name="discord" placeholder="https://discord.gg/...">
+                    </div>
+                    <div class="form-group">
+                        <label for="telegram">Telegram Group</label>
+                        <input type="url" id="telegram" name="telegram" placeholder="https://t.me/...">
+                    </div>
+                    <div class="form-group">
+                        <label for="medium">Medium</label>
+                        <input type="url" id="medium" name="medium" placeholder="https://medium.com/...">
+                    </div>
+                    <div class="form-group">
+                        <label for="facebook">Facebook</label>
+                        <input type="url" id="facebook" name="facebook" placeholder="https://facebook.com/...">
+                    </div>
+                    <div class="form-group">
+                        <label for="youtube">YouTube</label>
+                        <input type="url" id="youtube" name="youtube" placeholder="https://youtube.com/...">
+                    </div>
+                    <div class="form-group">
+                        <label for="telegramNews">Telegram News Channel</label>
+                        <input type="url" id="telegramNews" name="telegramNews" placeholder="https://t.me/...">
+                    </div>
+                    <div class="form-group">
+                        <label for="linkedin">LinkedIn</label>
+                        <input type="url" id="linkedin" name="linkedin" placeholder="https://linkedin.com/...">
+                    </div>
+                </div>
+            </div>
+            
+            <button type="submit" class="submit-btn">Generate Social Media Posts</button>
+        </form>
+    </div>
+    
+    <script>
+        const form = document.getElementById('idoForm');
+        const successMessage = document.getElementById('successMessage');
+        const errorMessage = document.getElementById('errorMessage');
+        const errorText = document.getElementById('errorText');
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Hide messages
+            successMessage.style.display = 'none';
+            errorMessage.style.display = 'none';
+            
+            // Collect form data
+            const formData = new FormData(form);
+            const data = {};
+            
+            for (let [key, value] of formData.entries()) {
+                if (value) data[key] = value;
+            }
+            
+            // n8n webhook URL
+            const webhookUrl = 'https://chaingpt.app.n8n.cloud/webhook-test/ido-social-generator';
+            
+            try {
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    successMessage.style.display = 'block';
+                    form.reset();
+                    window.scrollTo(0, 0);
+                } else {
+                    throw new Error('Failed to generate posts');
+                }
+            } catch (error) {
+                errorText.textContent = error.message;
+                errorMessage.style.display = 'block';
+                window.scrollTo(0, 0);
+            }
+        });
+    </script>
+</body>
+</html>
